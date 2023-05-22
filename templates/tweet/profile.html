@@ -36,8 +36,16 @@
                         {% endfor %}
                       </p>
                     </div>
-                </div>               
-                
+                </div> 
+                <br>
+                <form method="post">
+                    {% csrf_token %}
+                    {% if profiles in request.user.profile.follows.all %}
+                        <button class="btn btn-outline-danger" name="follow" value="unfollow" type="submit">Unfollow @{{profiles.user.username}}</button>
+                    {% else %}
+                        <button class="btn btn-outline-success" name="follow" value="follow" type="submit">Follow @{{profiles.user.username}}</button>
+                    {% endif %}
+                </form>          
             </div>
         </div>
     </div>
