@@ -5,19 +5,22 @@ from .models import Profile, Tweet
 # Register your models here.
 admin.site.unregister(Group)
 
-class ProfileInlene(admin.StackedInline):
+
+class ProfileInline(admin.StackedInline):
     model = Profile
+
 
 class UserAdmin(admin.ModelAdmin):
     model = User
     fields = ['username']
-    inlines = [ProfileInlene]
+    inlines = [ProfileInline]
+
 
 # Unregister User
 admin.site.unregister(User)
 
 # Re-register User
 
-admin.site.register(User,UserAdmin)
+admin.site.register(User, UserAdmin)
 # admin.site.register(Profile)
 admin.site.register(Tweet)

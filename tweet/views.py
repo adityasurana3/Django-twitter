@@ -3,6 +3,7 @@ from .models import Profile, Tweet
 from django.contrib import messages
 from .forms import TweetForm, SignUpForm
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -29,7 +30,7 @@ def profile_list(request):
         profiles = Profile.objects.exclude(user=request.user)
         return render(request, 'tweet/profile_list.html', {'profiles': profiles})
     else:
-        messages.warning(request, "You must be loggedin to continue...")
+        messages.warning(request, "You must be logged in to continue...")
         return redirect('home')
 
 
@@ -38,7 +39,6 @@ def profile(request, pk):
         profiles = Profile.objects.get(user__id=pk)
         tweets = Tweet.objects.filter(user__id=pk)
         if request.method == "POST":
-
             current_user_profile = request.user.profile
             action = request.POST['follow']
             if action == "unfollow":
@@ -46,11 +46,11 @@ def profile(request, pk):
             elif action == "follow":
                 current_user_profile.follows.add(profiles)
             else:
-                print("something went wrong")
+                return HttpResponse("<h1>Something went wrong...</h1>")
             current_user_profile.save()
         return render(request, 'tweet/profile.html', {'profiles': profiles, 'tweets': tweets})
     else:
-        messages.warning(request, "You must be loggedin to continue...")
+        messages.warning(request, "You must be logged in to continue...")
         return redirect('login')
 
 
@@ -61,10 +61,10 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.warning(request, "You have been loggedin")
+            messages.warning(request, "You have been logged in")
             return redirect('home')
         else:
-            messages.warning(request, "There was an error loggin in")
+            messages.warning(request, "There was an error. Please try again!!!")
             return redirect('login')
     else:
         return render(request, 'login.html', {})
@@ -77,21 +77,41 @@ def logout_user(request):
 
 
 def register_user(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request,user)
-                messages.success(request, 'Your account was created successfully')
-                return redirect('home')
-            print(password,username)
+    if request.user.is_authenticated:
+        return redirect('home')
     else:
-        form = SignUpForm()
+        if request.method == 'POST':
+            form = SignUpForm(request.POST)
+            if form.is_valid():
+                form.save()
+                username = form.cleaned_data['username']
+                password = form.cleaned_data['password1']
+                user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, 'Your account was created successfully')
+                    return redirect('home')
+        else:
+            form = SignUpForm()
     context = {
         'form': form,
     }
     return render(request, 'register.html', context)
+
+
+def update_user(request, pk):
+    if request.user.is_authenticated:
+        current_user = User.objects.get(pk=pk)
+        if request.method == 'POST':
+            form = SignUpForm(request.POST, instance=current_user)
+            if form.is_valid():
+                form.save()
+                login(request, current_user)
+                messages.success(request, 'You profile has been updated')
+                return redirect('home')
+        else:
+            form = SignUpForm(instance=current_user)
+        return render(request, 'tweet/update_user.html', {'form': form})
+    else:
+        messages.warning(request, 'You must be logged in')
+        return redirect('home')
