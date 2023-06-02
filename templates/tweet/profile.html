@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 {% if profiles %}
 
@@ -12,11 +12,24 @@
     
                 {% for tweet in tweets %}
                     <div class="alert alert-dark" role="alert">
-                        {{tweet.body}}<br>
-                        <small class="text-muted">
-                            ({{tweet.created_at}}) By
-                            @{{tweet.user.username}}
-                        </small>    
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-1">
+                                    {% if profiles.profile_image %}
+                                        <img src="{{profiles.profile_image.url}}" alt="{{profiles.user.username}}" width="50" height="50" class="rounded-circle">
+                                    {% else %}
+                                        <img src="{% static 'images/default_profile_pic.png' %}" class="rounded-circle" alt="{{profiles.user.username}}">
+                                    {% endif %}
+                                </div>
+                                <div class="col-10">
+                                    {{tweet.body}}<br>
+                                    <small class="text-muted">
+                                        ({{tweet.created_at}}) By
+                                        @{{tweet.user.username}}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <br><br>
                 {% endfor %}
@@ -26,6 +39,10 @@
 
             <div class="col-4">
                 <br><br><br>
+                {% if profiles.profile_image %}
+                    <img src="{{profiles.profile_image.url}}" alt="Profile Photo" width="250px" class="rounded-circle">
+                {% endif %}
+                <br><br>
                 <div class="card">
                     <div class="card-header">
                         Follows
