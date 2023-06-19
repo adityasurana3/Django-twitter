@@ -23,13 +23,14 @@
                             {{tweet.body}}<br>
                             <small class="text-muted">
                                 ({{tweet.created_at}}) By
-                                <a class="text-muted text-decoration-none" href="{% url 'profile' tweet.user.id %}"><b>@{{tweet.user.username}}</b></a>
+                                <a class="text-muted text-decoration-none" href="{% url 'profile' tweet.user.id %}"><b>@{{tweet.user.username}}</b></a> - {{tweet.number_of_likes}} Likes - 
                                 {% if user in tweet.likes.all %}
-                                - {{tweet.number_of_likes}} Likes - <a href="{% url 'tweet_like' tweet.id %}">Unlike</a>
+                                {% comment %} Unlike {% endcomment %}
+                                <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart-fill" style="color:red"></i></a>
                                 {% else %}
-                                - {{tweet.number_of_likes}} Likes - <a href="{% url 'tweet_like' tweet.id %}">Like</a>
+                                {% comment %} Like {% endcomment %}
+                                <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart" style="color:red"></i></a>
                                 {% endif %}
-                                
                             </small>   
                         </div>
                     </div>
