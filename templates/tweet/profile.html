@@ -25,8 +25,9 @@
                                     {{tweet.body}}<br>
                                     <small class="text-muted">
                                         ({{tweet.created_at}}) By
-                                        @{{tweet.user.username}}
-                                        - {{tweet.number_of_likes}} Likes - 
+                                        @{{tweet.user.username}}- 
+                                        &nbsp;&nbsp;
+                                        {{tweet.number_of_likes}} Likes - 
                                         {% if user in tweet.likes.all %}
                                         {% comment %} Unlike {% endcomment %}
                                         <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart-fill" style="color:red"></i></a>
@@ -34,6 +35,8 @@
                                         {% comment %} Like {% endcomment %}
                                         <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart" style="color:red"></i></a>
                                         {% endif %}
+                                        &nbsp;&nbsp;
+                                        <a href="{% url 'tweet_show' tweet.id %}"><i class="bi bi-share"></i></a>
                                     </small>
                                 </div>
                             </div>
@@ -49,8 +52,31 @@
                 <br><br><br>
                 {% if profiles.profile_image %}
                     <img src="{{profiles.profile_image.url}}" alt="Profile Photo" width="250px" class="rounded-circle">
+                    <br/><br/>
                 {% endif %}
+
+                {% if profiles.homepage_link %}
+	                <a href="{{ profiles.homepage_link }}" target="new"><i class="bi bi-link-45deg"></i></a>
+				{% endif %}
+				&nbsp;&nbsp;
+				{% if profiles.facebook_link %}
+	                <a href="{{ profiles.facebook_link }}" target="new"><i class="bi bi-facebook"></i></i></a>
+				{% endif %}
+				&nbsp;&nbsp;
+				{% if profiles.instagram_link %}
+	                <a href="{{ profiles.instagram_link }}" target="new"><i class="bi bi-instagram"></i></a>
+				{% endif %}
+				&nbsp;&nbsp;
+				{% if profiles.linkedin_link %}
+	                <a href="{{ profiles.linkedin_link }}" target="new"><i class="bi bi-linkedin"></i></a>
+				{% endif %}
                 <br><br>
+                {% if profiles.profile_bio %}
+                <p align="justify-content">
+                    {{profiles.profile_bio }}
+                </p>
+                {% endif %}
+            <br/><br/>
                 <div class="card">
                     <div class="card-header">
                         Follows
@@ -59,9 +85,14 @@
                       <p class="card-text">
                         {% for profile in profiles.follows.all %}
                             <a href="{% url 'profile' profile.user.id %}">@{{profile}}</a>
+                            &nbsp;&nbsp;
+                            <a href="{% url 'unfollow' profile.user.id %}"><i class="bi bi-person-dash"></i></a>
                             <br>
                         {% endfor %}
                       </p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'follows' request.user.id %}" class="btn btn-sm btn-outline-secondary">See all...</a>
                     </div>
                 </div>
                 <br><br> 
@@ -71,11 +102,22 @@
                     </div>
                     <div class="card-body">
                       <p class="card-text">
-                        {% for profile in profiles.followed_by.all %}
+                        {% for profile in profiles.followed_by.all|slice:3 %}
                             <a href="{% url 'profile' profile.user.id %}">@{{profile}}</a>
+                            {% if profile in profiles.follows.all %}
+                            &nbsp;&nbsp;
+                            <a href="{% url 'unfollow' profile.user.id %}"><i class="bi bi-person-dash"></i></a>
+                            {% else %}
+                            &nbsp;&nbsp;
+                            <a href="{% url 'follow' profile.user.id %}"><i class="bi bi-person-plus"></i></a>
+                            {% endif %}
                             <br>
                         {% endfor %}
                       </p>
+                      
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'followers' request.user.id %}" class="btn btn-sm btn-outline-secondary">See all...</a>
                     </div>
                 </div> 
                 <br>

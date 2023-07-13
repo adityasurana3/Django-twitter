@@ -53,6 +53,29 @@ def profile(request, pk):
         messages.warning(request, "You must be logged in to continue...")
         return redirect('login')
 
+def followers(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profiles = Profile.objects.get(user_id = pk)
+            return render(request, 'tweet/followers.html',{'profiles':profiles})
+        else:
+            messages.warning(request, "You can't access other user followers")
+            return redirect('home')
+    else:
+        messages.warning(request, "You must be logged in to continue...")
+        return redirect('login')
+
+def follows(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profiles = Profile.objects.get(user_id = pk)
+            return render(request, 'tweet/follows.html',{'profiles':profiles})
+        else:
+            messages.warning(request, "You can't access other user followers")
+            return redirect('home')
+    else:
+        messages.warning(request, "You must be logged in to continue...")
+        return redirect('login')
 
 def login_user(request):
     if request.method == 'POST':
@@ -127,6 +150,36 @@ def tweet_like(request,pk):
             tweet.likes.remove(request.user)
         else:
             tweet.likes.add(request.user)
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        messages.warning(request, 'You must be logged in')
+        return redirect('home')
+    
+def tweet_show(request, pk):
+    tweet = get_object_or_404(Tweet,id=pk)
+    if tweet:
+        return render(request, 'tweet/show_tweet.html', {'tweet':tweet})
+    else:
+        messages.success(request, 'That tweet does not exist')
+        return redirect('home')
+    
+def unfollow(request, pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user__id = pk)
+        request.user.profile.follows.remove(profile)
+        profile.save()
+        messages.success(request, f'You have successfully unfollowed {profile.user.username}')
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        messages.warning(request, 'You must be logged in')
+        return redirect('home')
+
+def follow(request, pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user__id = pk)
+        request.user.profile.follows.add(profile)
+        profile.save()
+        messages.success(request, f'You have successfully followed {profile.user.username}')
         return redirect(request.META.get('HTTP_REFERER'))
     else:
         messages.warning(request, 'You must be logged in')

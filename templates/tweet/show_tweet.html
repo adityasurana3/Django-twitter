@@ -7,8 +7,7 @@
         <div class="col-8">
             <h1>Tweets</h1>
             <br>
-            {% if tweets %}
-            {% for tweet in tweets %}
+            {% if tweet %}
             <div class="alert alert-dark" role="alert">
                 <div class="container">
                     <div class="row">
@@ -23,7 +22,7 @@
                             {{tweet.body}}<br>
                             <small class="text-muted">
                                 ({{tweet.created_at}}) By
-                                <a class="text-muted text-decoration-none" href="{% url 'profile' tweet.user.id %}"><b>@{{tweet.user.username}}</b></a> - &nbsp;&nbsp; {{tweet.number_of_likes}} Likes - 
+                                <a class="text-muted text-decoration-none" href="{% url 'profile' tweet.user.id %}"><b>@{{tweet.user.username}}</b></a> - {{tweet.number_of_likes}} Likes - 
                                 {% if user in tweet.likes.all %}
                                 {% comment %} Unlike {% endcomment %}
                                 <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart-fill" style="color:red"></i></a>
@@ -31,15 +30,16 @@
                                 {% comment %} Like {% endcomment %}
                                 <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart" style="color:red"></i></a>
                                 {% endif %}
-                                &nbsp;&nbsp;
-                                <a href="{% url 'tweet_show' tweet.id %}"><i class="bi bi-share"></i></a>
+                                {% comment %} {% url 'tweet_show' tweet.id as tweet_show_url %} {% endcomment %}
+                                <br>
+                                <p>Share your code: {{ request.build_absolute_uri}}</p>
+                                
                             </small>   
                         </div>
                     </div>
                 </div> 
             </div>
             <br><br>
-            {% endfor %}
         </div>
         <div class="col-4">
             <br><br><br>
