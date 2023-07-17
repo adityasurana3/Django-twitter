@@ -184,3 +184,47 @@ def follow(request, pk):
     else:
         messages.warning(request, 'You must be logged in')
         return redirect('home')
+    
+def delete(request, pk):
+    if request.user.is_authenticated:
+        tweet = get_object_or_404(Tweet, id=pk)
+        if request.user.username == tweet.user.username:
+            tweet.delete()
+            messages.warning(request, 'Deleted')
+            return redirect(request.META.get('HTTP_REFERER'))
+        else:
+            messages.warning(request, "You don't own that meep!!!")
+            return redirect('home')
+    else:
+        messages.warning(request, 'You must be logged in')
+        return redirect('home')
+        
+def edit_post(request, pk):
+    if request.user.is_authenticated:
+        tweet = Tweet.objects.get(pk=pk)
+        if request.user.username == tweet.user.username: 
+            if request.method == 'POST':
+                form = TweetForm(request.POST, instance=tweet)
+                if form.is_valid():
+                    instance = form.save(commit=False)
+                    instance.user = request.user
+                    instance.save()
+                    messages.success(request, 'You have successfully updated the tweet')
+                    return redirect('profile',pk=request.user.id)
+                else:
+                    messages.error(request, form.errors)
+                    return redirect(request.META.get('HTTP_REFERER'))
+            else:
+                form = TweetForm(instance=tweet)
+                
+            context = {
+                'form':form,
+                'tweet':tweet,
+            }
+            return render(request,'tweet/edit_tweet.html', context=context)
+        else:
+            messages.warning(request, "You don't own that meep!!!")
+            return redirect('home')
+    else:
+        messages.warning(request, 'You must be logged in')
+        return redirect('home')

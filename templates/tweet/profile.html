@@ -37,6 +37,14 @@
                                         {% endif %}
                                         &nbsp;&nbsp;
                                         <a href="{% url 'tweet_show' tweet.id %}"><i class="bi bi-share"></i></a>
+                                        &nbsp;&nbsp;
+                                        {% if request.user.username == tweet.user.username %}
+                                        <a href="{% url 'delete' tweet.id %}"><i class="bi bi-trash"></i></a>
+                                        {% endif %}
+                                        &nbsp;&nbsp;
+                                        {% if request.user.username == tweet.user.username %}
+                                        <a href="{% url 'edit_post' tweet.id %}"><i class="bi bi-pencil-square"></i></a>
+                                        {% endif %}
                                     </small>
                                 </div>
                             </div>

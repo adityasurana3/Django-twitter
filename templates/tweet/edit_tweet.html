@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col-8">
+            <h1>Tweets</h1>
+            <br>
+            {% if tweet %}
+            <div class="alert alert-dark" role="alert">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-1">
+                            {% if tweet.user.profile.profile_image %}
+                                <img src="{{tweet.user.profile.profile_image.url}}" alt="{{tweet.user.username}}" width="50" height="50" class="rounded-circle">
+                            {% else %}
+                                <img src="{% static 'images/default_profile_pic.png' %}" class="rounded-circle" alt="{{tweet.user.username}}" width="50" height="50">
+                            {% endif %}
+                        </div>
+                        <div class="col-10">
+                            {{tweet.body}}<br>
+                            <small class="text-muted">
+                                ({{tweet.created_at}}) By
+                                <a class="text-muted text-decoration-none" href="{% url 'profile' tweet.user.id %}"><b>@{{tweet.user.username}}</b></a> - {{tweet.number_of_likes}} Likes - 
+                                {% if user in tweet.likes.all %}
+                                {% comment %} Unlike {% endcomment %}
+                                <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart-fill" style="color:red"></i></a>
+                                {% else %}
+                                {% comment %} Like {% endcomment %}
+                                <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart" style="color:red"></i></a>
+                                {% endif %}
+                                {% comment %} {% url 'tweet_show' tweet.id as tweet_show_url %} {% endcomment %}
+                                <br>
+                                <p>Share your code: {{ request.build_absolute_uri}}</p>
+                                
+                            </small>   
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            <br><br>
+        
+            <br><br><br>
+            {% if form %}
+            <form method = "POST" action = {% url 'edit_post' tweet.id %}>
+                {% csrf_token %}
+                {{form.as_p}}
+                <button type="submit" class="btn btn-secondary">Edit Tweet</button>
+            </form>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
