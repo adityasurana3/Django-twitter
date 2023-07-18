@@ -26,11 +26,29 @@
             <a class="nav-link" href="{% url 'login' %}">Login</a>
           </li>
           {% endif %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Search
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{% url 'search' %}">Search Tweet</a></li>
+              <li><a class="dropdown-item" href="{% url 'search_user' %}">Search User</a></li>
+            </ul>
+          </li>
         </ul>
-        <!-- <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form> -->
+        {% if '/profile_list/' in request.path or '/search_user/' in request.path %}
+          <form method = "POST" class="d-flex" action="{% url 'search_user' %}">
+            {% csrf_token %}
+            <input class="form-control me-2" type="search" placeholder="Search User" aria-label="Search" name="search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        {% else %}
+          <form method = "POST" class="d-flex" action="{% url 'search' %}">
+            {% csrf_token %}
+            <input class="form-control me-2" type="search" placeholder="Search Tweet" aria-label="Search" name="search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        {% endif %}
         {% if user.is_authenticated %}
           <ul class="navbar-nav ml-auto">
             <li class="nav-link navbar-brand">

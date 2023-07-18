@@ -4,7 +4,7 @@ from django.contrib import messages
 from .forms import TweetForm, SignUpForm, ProfilePicForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-
+from django.db.models import Q
 
 # Create your views here.
 def home(request):
@@ -228,3 +228,20 @@ def edit_post(request, pk):
     else:
         messages.warning(request, 'You must be logged in')
         return redirect('home')
+    
+
+def search(request):
+    if request.method == "POST":
+        search = request.POST.get('search')
+        searched = Tweet.objects.filter(body__contains = search)
+        return render(request, 'tweet/search.html',{'search':search,'searched':searched})
+    else:
+        return render(request, 'tweet/search.html',{})
+
+def search_user(request):
+    if request.method == "POST":
+        search = request.POST.get('search')
+        searched = User.objects.filter(username__contains = search)
+        return render(request, 'tweet/search_user.html',{'search':search,'searched':searched})
+    else:
+        return render(request, 'tweet/search_user.html',{})

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h1>Search</h1>
+    <br/>
+
+    <form method = "POST" action = {% url 'search' %}>
+        {% csrf_token %}
+        <input type="input" class="form-control" placeholder="Search Tweet" name="search">
+        <br><br>
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+    <br><br>
+    {% if search %}
+        {% if searched %}
+        <h3>You seached for: {{search}}</h3><br><br>
+            {% for tweet in searched %}
+                <div class="alert alert-dark" role="alert">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-1">
+                                {% if tweet.user.profile.profile_image %}
+                                    <img src="{{tweet.user.profile.profile_image.url}}" alt="{{tweet.user.username}}" width="50" height="50" class="rounded-circle">
+                                {% else %}
+                                    <img src="{% static 'images/default_profile_pic.png' %}" class="rounded-circle" alt="{{tweet.user.username}}" width="50" height="50">
+                                {% endif %}
+                            </div>
+                            <div class="col-10">
+                                {{tweet.body}}<br>
+                                <small class="text-muted">
+                                    ({{tweet.created_at}}) By
+                                    <a class="text-muted text-decoration-none" href="{% url 'profile' tweet.user.id %}"><b>@{{tweet.user.username}}</b></a> - &nbsp;&nbsp; {{tweet.number_of_likes}} Likes - 
+                                    {% if user in tweet.likes.all %}
+                                    {% comment %} Unlike {% endcomment %}
+                                    <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart-fill" style="color:red"></i></a>
+                                    {% else %}
+                                    {% comment %} Like {% endcomment %}
+                                    <a href="{% url 'tweet_like' tweet.id %}"><i class="bi bi-heart" style="color:red"></i></a>
+                                    {% endif %}
+                                    &nbsp;&nbsp;
+                                    <a href="{% url 'tweet_show' tweet.id %}"><i class="bi bi-share"></i></a>
+                                </small>   
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                <br><br>
+            {% endfor %}
+        {% else %}
+            <h1>No tweet found</h1>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock content %}
